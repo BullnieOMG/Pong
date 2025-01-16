@@ -1,5 +1,6 @@
 from pygame import *
 from random import *
+from time import time as timer 
 
 class GameSprite(sprite.Sprite):
     # constructor de clase
@@ -42,8 +43,8 @@ class Player2(GameSprite):
             self.rect.y -= self.speed_y
             
 class Ball(GameSprite):
-    global finish
     def update(self):
+        global finish, points
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
         if self.rect.x > 670:
@@ -65,9 +66,18 @@ class Ball(GameSprite):
         if collision_ball_player1:
             print('Colision 1')
             self.speed_x *= -1
+            points += 1
+            boing.play()
         if collision_ball_player2:
             print('Colision 2')
             self.speed_x *= -1
+            points += 1
+            boing.play()
+        if points % 5 == 0:
+            points += 1
+            self.speed_x *= 1.1
+            self.speed_y *= 1.1
+            print('aumento')
 
 font.init()
 font1 = font.SysFont('Arial',36)
@@ -80,9 +90,15 @@ background = transform.scale(image.load('Fondo_pong.png'), (win_width,win_height
 clock = time.Clock()
 jugador1 = Player1('Pong.png', 10, 200, 15, 105, 0, 15)
 jugador2 = Player2('Pong.png', 675, 200, 15, 105, 0, 15)
-pelota = Ball('bola_pong.png', 322, 200, 40, 40, 8, 8)
+pelota = Ball('bola_pong.png', 322, 200, 40, 40, 6, 6)
+
+mixer.init()
+boing = mixer.Sound("boing.mp3")
+boing.play()
+
 
 FPS = 40
+points = 0
 
 game = True
 finish = False
@@ -100,6 +116,7 @@ while game:
         jugador1.update()
         jugador2.update()
         pelota.update()
+        print(finish)
         
         jugador1.reset()
         jugador2.reset()
@@ -108,4 +125,17 @@ while game:
         
         display.update()
     elif finish == True:
+        
         display.update()
+
+        print('a')
+        time.wait(3000)
+        print('b')
+        finish = False
+        pelota = Ball('bola_pong.png', 322, 200, 40, 40, 8, 8)
+        points = 0
+
+        display.update()
+    
+    
+    
